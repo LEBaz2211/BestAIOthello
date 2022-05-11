@@ -1,7 +1,5 @@
 import numpy as np
 from easyAI import TwoPlayerGame, AI_Player, Negamax
-from othello_game import possibleMoves, isGameOver, next_move
-import game_support 
 
 to_string = lambda a: "ABCDEFGH"[a[0]] + str(a[1] + 1)
 to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
