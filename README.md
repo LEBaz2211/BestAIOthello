@@ -18,3 +18,14 @@ Libraries used : easyAI, numpy, othello_game, game_support
     - Numpy is a python library generally used to create array objects, we thought that by using numpy 
     we would easely have access to the different positions on the board and we could easely go through it 
     to collect information for the AI.
+
+2. Player file
+
+Libraries used : socket, json, threading, time
+
+
+3. To run the code :
+
+    1. Enter python server.py othello on your terminal
+    2. Run file game_runner.py
+
