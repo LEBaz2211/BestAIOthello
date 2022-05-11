@@ -15,7 +15,12 @@ class OthelloAI(TwoPlayerGame):
 
 
     def state_to_board(self):
-        pass
+        board = np.zeros((8, 8), dtype=int)
+        for case in self.state["board"][0]:
+            board[case//8][(case%8)] = 1
+        for case in self.state["board"][1]:
+            board[case//8][(case%8)] = 2
+        return(board)
         
 
     def possible_moves(self):
@@ -29,7 +34,11 @@ class OthelloAI(TwoPlayerGame):
         return pos_moves
 
     def make_move(self, pos):
-        pass
+        pos = to_array(pos)
+        flipped = pieces_flipped(self.board, pos, self.current_player)
+        for i, j in flipped:
+            self.board[i, j] = self.current_player
+        self.board[pos[0], pos[1]] = self.current_player      
 
     def is_over(self):
         return self.possible_moves() == []
@@ -62,3 +71,41 @@ BOARD_SCORE = np.array(
 DIRECTIONS = [
     np.array([i, j]) for i in [-1, 0, 1] for j in [-1, 0, 1] if (i != 0 or j != 0)
 ]
+
+def pieces_flipped(board, pos, current_player):
+    flipped = []
+
+    for d in DIRECTIONS:
+        ppos = pos + d
+        streak = []
+        while (0 <= ppos[0] <= 7) and (0 <= ppos[1] <= 7):
+            if board[ppos[0], ppos[1]] == 3 - current_player:
+                streak.append(+ppos)
+            elif board[ppos[0], ppos[1]] == current_player:
+                flipped += streak
+                break
+            else:
+                break
+            ppos += d
+
+    return flipped
+
+def aieasyup(state):
+    grid = state["board"]
+    depth = 4
+    # if len(state["board"]) > 24:
+    #     depth = (len(state["board"])) // 8)
+    ai = Negamax(depth)
+    the_game = OthelloAI([AI_Player(ai), AI_Player(ai)], state)
+    try:
+        the_move = the_game.get_move()
+        list1 = ("A,B,C,D,E,F,G,H").split(",")
+        real_move = 0
+        for i in the_move:
+            if i in list1:
+                real_move += ((list1.index(i)) * 8)
+            else:
+                real_move += (int(i)-1)
+        return(real_move)
+    except:
+        print("No possible moves left")
