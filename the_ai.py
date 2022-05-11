@@ -8,6 +8,7 @@ to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
 
 
 class OthelloAI(TwoPlayerGame):
+    """The OthelloAI class is used to define and implement the algorithm"""
 
     def __init__(self, players, state, board=None):
         """Initialisation of the game"""
