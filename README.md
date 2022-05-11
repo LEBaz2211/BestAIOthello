@@ -4,10 +4,12 @@
    \___/ \__|_||_\___|_|_\___/
 
 IT project June 2022
+Basil Mannaerts (20269)
+Yllke Prebreza (18402)
 
 1. The AI implementation
 
-Libraries used : easyAI, numpy
+Libraries used : easyAI, numpy, othello_game, game_support
 
     - EsayAI is a pure-Python artificial intelligence framework for two players games. This 
     library makes it easy to define the mechanism of a game and, in our case, play it against 
@@ -16,5 +18,3 @@ Libraries used : easyAI, numpy
     - Numpy is a python library generally used to create array objects, we thought that by using numpy 
     we would easely have access to the different positions on the board and we could easely go through it 
     to collect information for the AI.
-
-
