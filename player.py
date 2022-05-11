@@ -2,7 +2,7 @@ import socket
 import json
 import threading
 import time
-from the_ai import move_extrector
+from the_ai import move_extractor
 
 class Player:
     """
@@ -69,7 +69,7 @@ class Player:
                     print("INFO:player and server are playing at ping pong")
                 elif msg['request'] == 'play':
                     print("GAME:\nLives left: " + str(msg['lives']) + "\nErrors: " + str(msg['errors']) + "\nGame state: " + str(msg['state']))
-                    the_move_played = move_extrector(msg['state'])
+                    the_move_played = move_extractor(msg['state'])
                     self.player_response(client, {"response": "move","move": the_move_played, "message": "L'important c'est de participer ;p"})
     
     def thread(self):
