@@ -87,11 +87,3 @@ if __name__ == "__main__":
     player1.sub()
     player1.begin()
     player1.thread()
-
-    time.sleep(3)
-
-    player2 = Player(("127.0.0.1", 3000), ("127.0.0.1", 5050), "TheBetter", ["18021", "23012"])
-
-    player2.sub()
-    player2.begin()
-    player2.thread()
