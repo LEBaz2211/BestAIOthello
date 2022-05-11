@@ -7,7 +7,7 @@ IT project June 2022
 Basil Mannaerts (20269)
 Yllke Prebreza (18402)
 
-1. The AI implementation
+A. The AI implementation
 
 Libraries used : easyAI, numpy, othello_game, game_support
 
@@ -19,13 +19,22 @@ Libraries used : easyAI, numpy, othello_game, game_support
     we would easely have access to the different positions on the board and we could easely go through it 
     to collect information for the AI.
 
-2. Player file
+B. Player file
 
 Libraries used : socket, json, threading, time
 
+All these libraries are used to save data and enable communication between our AI and the server 
+given by the teacher.
 
-3. To run the code :
+C. Game_runner
 
-    1. Enter python server.py othello on your terminal
+It gives a nicer file to use to launch the game. This file mainly uses the player file as a library
+to start the game.
+
+D. To run the code :
+
+    1. Enter python server.py othello on your terminal  (on MacOS, you have to specify the python 
+    version, to do so you need to use python3 server.py othello)
+
     2. Run file game_runner.py
 
