@@ -1,5 +1,5 @@
 import numpy as np
-from easyAI import TwoPlayerGame,Human_Player, AI_Player, Negamax
+from easyAI import TwoPlayerGame, AI_Player, Negamax
 
 to_string = lambda a: "ABCDEFGH"[a[0]] + str(a[1] + 1)
 to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
@@ -8,6 +8,8 @@ to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
 class OthelloAI(TwoPlayerGame):
 
     def __init__(self, players, state, board=None):
+        """Initialisation of the game"""
+
         self.players = players
         self.state = state
         self.board = self.state_to_board()
@@ -15,6 +17,7 @@ class OthelloAI(TwoPlayerGame):
 
 
     def state_to_board(self):
+        ""
         board = np.zeros((8, 8), dtype=int)
         for case in self.state["board"][0]:
             board[case//8][(case%8)] = 1
