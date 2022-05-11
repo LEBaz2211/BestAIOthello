@@ -24,19 +24,22 @@ class OthelloAI(TwoPlayerGame):
             board[case//8][(case%8)] = 1
         for case in self.state["board"][1]:
             board[case//8][(case%8)] = 2
+        print(board)
         return(board)
+
         
 
     def possible_moves(self):
         """This function returns all the possible moves that AI can play"""
-        pos_moves = [
+        poss_moves = [
             to_string((i, j))
             for i in range(8)
             for j in range(8)
             if (self.board[i, j] == 0)
             and (pieces_flipped(self.board, (i, j), self.current_player) != [])
         ]
-        return pos_moves
+        print(poss_moves)
+        return poss_moves
 
     def make_move(self, pos):
         """Transforms the game according to the moves"""
@@ -106,6 +109,7 @@ def move_extractor(state) :
     the_game = OthelloAI([AI_Player(ai), AI_Player(ai)], state)
     try :
         the_move = the_game.get_move()
+        print(the_move)
         list1 = ("A,B,C,D,E,F,G,H").split(",")
         real_move = 0
         for i in the_move :
@@ -113,6 +117,6 @@ def move_extractor(state) :
                 real_move +=((list1.index(i))*8)
             else :
                 real_move += (int(i)-1)
-            return (real_move)
+        return (real_move)
     except :
         print("No possible moves left")
