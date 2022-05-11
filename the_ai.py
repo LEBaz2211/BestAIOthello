@@ -1,5 +1,7 @@
 import numpy as np
 from easyAI import TwoPlayerGame, AI_Player, Negamax
+from othello_game import possibleMoves, isGameOver, next_move
+import game_support
 
 to_string = lambda a: "ABCDEFGH"[a[0]] + str(a[1] + 1)
 to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
@@ -27,6 +29,7 @@ class OthelloAI(TwoPlayerGame):
         
 
     def possible_moves(self):
+        #This function returns all the possible moves that AI can play
         pos_moves = [
             to_string((i, j))
             for i in range(8)
@@ -37,6 +40,7 @@ class OthelloAI(TwoPlayerGame):
         return pos_moves
 
     def make_move(self, pos):
+        #Transforms the game according to the moves
         pos = to_array(pos)
         flipped = pieces_flipped(self.board, pos, self.current_player)
         for i, j in flipped:
@@ -44,9 +48,11 @@ class OthelloAI(TwoPlayerGame):
         self.board[pos[0], pos[1]] = self.current_player      
 
     def is_over(self):
+        #Checks if the game has ended
         return self.possible_moves() == []
 
     def scoring(self):
+        #Gives a score to the current game (for the AI), to aim for the higher score we give higher values to more strategic positions
         if np.sum(self.board == 0) > 32:  # less than half the board is full
             player = (self.board == self.current_player).astype(int)
             opponent = (self.board == self.opponent_index).astype(int)
@@ -76,6 +82,7 @@ DIRECTIONS = [
 ]
 
 def pieces_flipped(board, pos, current_player):
+    #It dertermines which pawns have been taken and need to be flipped (to change color)
     flipped = []
 
     for d in DIRECTIONS:
@@ -94,6 +101,7 @@ def pieces_flipped(board, pos, current_player):
     return flipped
 
 def aieasyup(state):
+    #it is defined to more efficiently run the game and give the necessary argguments to the algorithm
     grid = state["board"]
     depth = 4
     # if len(state["board"]) > 24:
