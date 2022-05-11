@@ -1,4 +1,3 @@
-from sre_parse import State
 import numpy as np
 from easyAI import TwoPlayerGame, AI_Player, Negamax
 from othello_game import possibleMoves, isGameOver, next_move
