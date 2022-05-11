@@ -2,7 +2,7 @@ import socket
 import json
 import threading
 import time
-import test_helper
+from the_ai import move_extrector
 
 class Player:
     """
@@ -28,16 +28,12 @@ class Player:
         """
         This function is used to encode and send a message (str ==> json ==> str) to the server.
         """
+        
         resp = json.dumps(response).encode('utf8')
-        inst = test_helper.SomeHelper() #for testing purposes
-        x = len(resp)
-        while inst.my_var < x:
-            sent = client.send(resp[inst.my_var:])
-            inst.my_var += sent
-        if inst.my_var == len(resp):
-            return True
-        else:
-            return False
+        total = 0
+        while total < len(resp):
+            sent = client.send(resp[total:])
+            total += sent
 
     def sub(self):
         """
@@ -47,12 +43,12 @@ class Player:
         print("INFO:inscription:sent player creds: ")
         print(data)
         port = self.sub_address[1]
-        with socket.socket() as sub_sock:
+        with socket.socket() as sub_sock: #open subscription socket and closes when exits
             sub_sock.connect(self.sub_address)
             self.player_response(sub_sock, data)
             print("INFO:inscription:player " + self.name + ':' + self.server_response(sub_sock)["response"])
 
-    def begin_server(self):
+    def begin(self):
         """
         This function initializes a server socket to communicate with the game server.
         """
@@ -73,14 +69,15 @@ class Player:
                     print("INFO:player and server are playing at ping pong")
                 elif msg['request'] == 'play':
                     print("GAME:\nLives left: " + str(msg['lives']) + "\nErrors: " + str(msg['errors']) + "\nGame state: " + str(msg['state']))
-                    # msg = {"response": "move","move": 15,"message": "Fun message"}
-                    # self.player_response(client, msg)
+                    the_move_played = move_extrector(msg['state'])
+                    self.player_response(client, {"response": "move","move": the_move_played, "message": "L'important c'est de participer ;p"})
     
     def thread(self):
         """
         This function creates a thread using the comm() fuction.
         """
         threading.Thread(target = self.comm).start()
+
 
 
 if __name__ == "__main__":
