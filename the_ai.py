@@ -1,13 +1,12 @@
 import numpy as np
 from easyAI import TwoPlayerGame, AI_Player, Negamax
-from othello_game import possibleMoves, isGameOver, next_move
-import game_support 
 
 to_string = lambda a: "ABCDEFGH"[a[0]] + str(a[1] + 1)
 to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
 
 
 class OthelloAI(TwoPlayerGame):
+    """The OthelloAI class is used to define and implement the algorithm"""
 
     def __init__(self, players, state, board=None):
         """Initialisation of the game"""
@@ -19,7 +18,7 @@ class OthelloAI(TwoPlayerGame):
 
 
     def state_to_board(self):
-        ""
+        """Updates the dtate of the board"""
         board = np.zeros((8, 8), dtype=int)
         for case in self.state["board"][0]:
             board[case//8][(case%8)] = 1
@@ -101,7 +100,7 @@ def pieces_flipped(board, pos, current_player):
     return flipped
 
 def move_extractor(state) :
-    """it is defined to more efficiently run the game and give the necessary argguments to the algorithm"""
+    """Tt is defined to more efficiently run the game and give the necessary argguments to the algorithm"""
     rec = 4
     ai = Negamax(rec)
     the_game = OthelloAI([AI_Player(ai), AI_Player(ai)], state)
