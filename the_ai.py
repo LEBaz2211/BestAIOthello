@@ -6,7 +6,6 @@ import pickle
 to_string = lambda a: "ABCDEFGH"[a[0]] + str(a[1] + 1)
 to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
 
-
 class OthelloAI(TwoPlayerGame):
     """The OthelloAI class is used to define and implement the algorithm"""
 
@@ -20,16 +19,13 @@ class OthelloAI(TwoPlayerGame):
 
 
     def state_to_board(self):
-        """Updates the dtate of the board"""
+        """Updates the state of the board"""
         board = np.zeros((8, 8), dtype=int)
         for case in self.state["board"][0]:
             board[case//8][(case%8)] = 1
         for case in self.state["board"][1]:
             board[case//8][(case%8)] = 2
-        print(board)
         return(board)
-
-        
 
     def possible_moves(self):
         """This function returns all the possible moves that AI can play"""
@@ -40,7 +36,6 @@ class OthelloAI(TwoPlayerGame):
             if (self.board[i, j] == 0)
             and (pieces_flipped(self.board, (i, j), self.current_player) != [])
         ]
-        print(poss_moves)
         return poss_moves
 
     def make_move(self, pos):
@@ -145,15 +140,29 @@ def move_extractor(state0, state1) :
     print(oppmove)
     the_game = OthelloAI([AI_Player(ai), Human_Player(move = oppmove)], state1)
     try :
-        the_move = the_game.get_move()
-        print(the_move)
-        list1 = ("A,B,C,D,E,F,G,H").split(",")
-        real_move = 0
-        for i in the_move :
-            if i in list1 :
-                real_move +=((list1.index(i))*8)
-            else :
-                real_move += (int(i)-1)
-        return (real_move)
+        the_move = the_game.play()
+        [i, j] = to_array(the_move)
+        real_move = int((i)*8 + j)
+        # table.to_file('saved_tt.data')
+        return real_move
     except :
         print("No possible moves left")
+
+
+
+if __name__ == "__main__":
+    start = time()
+    rec = 3
+    state = {'players': ['TheBest', 'TheBetter'], 'current': 0, 'board': [[28, 35], [27, 36]]}
+    table = TranspositionTable().from_file('saved_tt.data')
+
+    ai = Negamax(rec, tt=table)
+
+    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(3, tt=table))], state)
+    i = 0
+        
+    print(the_game.play())
+    i +=1
+
+    print(time() - start)
+    table.to_file('saved_tt.data')
