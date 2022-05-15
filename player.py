@@ -6,7 +6,6 @@ from the_ai import move_extractor
 from socket_handling import server_response, player_response
 import time
 import atexit
-import time
 
 class Player:
     """
@@ -55,25 +54,27 @@ class Player:
                         (conn, address) = player_sock.accept()
                     except TimeoutError:
                         print("Waiting for game server to send a request")
-                        self.wait_for_ping(player_sock)
+                        self.test_for_ping(player_sock)
                     try:
-                        start = time.time()
                         msg = server_response(conn)
                         if msg['request'] == 'ping':
                             self.pong(conn)
                         elif msg['request'] == 'play':
+<<<<<<< HEAD
                             state1 = msg['state']
                             if state0 is not None:
                                 self.move(conn, msg, state0)
                             else: self.move(conn, msg)
                             print("EX_TIME: {}".format(time.time() - start))
+=======
+                            self.move(conn, msg)
+>>>>>>> parent of b134876 (modified prints appeal)
                         break
-                        
                     except socket.timeout and json.decoder.JSONDecodeError:
                         continue
         return
     
-    def wait_for_ping(self, player_sock):
+    def test_for_ping(self, player_sock):
         while True:
             player_sock.settimeout(5)
             while self._running:
@@ -88,15 +89,58 @@ class Player:
                 except socket.timeout or TimeoutError:
                     continue
 
+
+    # def comm(self):
+    #     """
+    #     This function handles communication requests from the game server
+    #     """
+    #     while True:
+    #         msg, conn = begin_server(self.game_address)
+    #         if not msg:
+    #             self.comm()
+    #             print('yes')
+    #             break
+    #         start = time.time()
+    #         print(msg)
+    #         if msg['request'] == 'ping':
+    #             self.pong(conn)
+    #             end = time.time()
+    #         elif msg['request'] == 'play':
+    #             self.move(conn, msg)
+    #             end = time.time()
+    #     if end is not None: print("Time of execution:", end-start)
+
     def pong(self, conn):
         player_response(conn, {'response': 'pong'})
         print("INFO:player and server are playing at ping pong")
 
+<<<<<<< HEAD
     def move(self, conn, msg, state0=None):
         print("\n","_"*20)
         print("\n{} player's game:\nLIVES left: {} \nERRORS: {}".format(str(msg['state']['players'][msg['state']['current']]), str(msg['lives']), str(msg['errors'])))
         the_move_played = move_extractor(state0, msg['state'])
+=======
+    def move(self, conn, msg):
+        print("GAME:\nLives left: " + str(msg['lives']) + "\nErrors: " + str(msg['errors']) + "\nGame state: " + str(msg['state']))
+        the_move_played = move_extractor(msg['state'])
+>>>>>>> parent of b134876 (modified prints appeal)
         player_response(conn, {"response": "move","move": the_move_played, "message": "L'important c'est de participer ;p"})
+
+    # def comm(self):
+    #     """
+    #     This function handles communication requests from the game server
+    #     """
+    #     while True:
+    #         (client, address) = self.player_sock.accept()
+    #         with client:
+    #             msg = server_response(client)
+    #             if msg['request'] == 'ping':
+    #                 player_response(client, {'response': 'pong'})
+    #                 print("INFO:player and server are playing at ping pong")
+    #             elif msg['request'] == 'play':
+    #                 print("GAME:\nLives left: " + str(msg['lives']) + "\nErrors: " + str(msg['errors']) + "\nGame state: " + str(msg['state']))
+    #                 the_move_played = move_extractor(msg['state'])
+    #                 player_response(client, {"response": "move","move": the_move_played, "message": "L'important c'est de participer ;p"})
     
     def thread(self):
         """
