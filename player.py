@@ -5,6 +5,7 @@ import time
 from the_ai import move_extractor
 from socket_handling import server_response, begin_server, player_response
 import time
+import atexit
 
 class Player:
     """
@@ -16,6 +17,7 @@ class Player:
         self.game_address = game_address #input an adress tuple(host, port) for ping and game comunnication
         self.name = name #name of the Player
         self.matricules = matricules #List of the two student matricules in str type
+        self._running = True
 
 
     def sub(self):
@@ -27,29 +29,75 @@ class Player:
         print(data)
         port = self.sub_address[1]
         with socket.socket() as sub_sock: #open subscription socket and closes when exits
-            sub_sock.connect(self.sub_address)
-            player_response(sub_sock, data)
-            print("INFO:inscription:player " + self.name + ':' + server_response(sub_sock)["response"])
+            try:
+                sub_sock.connect(self.sub_address)
+                player_response(sub_sock, data)
+                print("INFO:inscription:player " + self.name + ':' + server_response(sub_sock)["response"])
+            except ConnectionRefusedError:
+                print("The game server isn't open yet")
     
-    def comm(self):
-        """
-        This function handles communication requests from the game server
-        """
+    def terminate(self):
+        self._running = False
+
+    def run(self):
+        with socket.socket() as player_sock:
+            player_sock.bind(self.game_address)
+            while True:
+            # Set timeout period
+                player_sock.settimeout(5) 
+                while self._running:
+                    player_sock.listen()
+                    try:
+                        (conn, address) = player_sock.accept()
+                    except TimeoutError:
+                        print("Waiting for game server to send a request")
+                        self.test_for_ping(player_sock)
+                    try:
+                        msg = server_response(conn)
+                        if msg['request'] == 'ping':
+                            self.pong(conn)
+                        elif msg['request'] == 'play':
+                            self.move(conn, msg)
+                        break
+                    except socket.timeout and json.decoder.JSONDecodeError:
+                        continue
+        return
+    
+    def test_for_ping(self, player_sock):
         while True:
-            msg, conn = begin_server(self.game_address)
-            if not msg:
-                self.comm()
-                print('yes')
-                break
-            start = time.time()
-            print(msg)
-            if msg['request'] == 'ping':
-                self.pong(conn)
-                end = time.time()
-            elif msg['request'] == 'play':
-                self.move(conn, msg)
-                end = time.time()
-        if end is not None: print("Time of execution:", end-start)
+            player_sock.settimeout(5)
+            while self._running:
+                player_sock.listen()
+                try:
+                    (conn, address) = player_sock.accept()
+                    msg = server_response(conn)
+                    if msg['request'] == 'ping':
+                        self.pong(conn)
+                        return
+                    break
+                except socket.timeout or TimeoutError:
+                    continue
+
+
+    # def comm(self):
+    #     """
+    #     This function handles communication requests from the game server
+    #     """
+    #     while True:
+    #         msg, conn = begin_server(self.game_address)
+    #         if not msg:
+    #             self.comm()
+    #             print('yes')
+    #             break
+    #         start = time.time()
+    #         print(msg)
+    #         if msg['request'] == 'ping':
+    #             self.pong(conn)
+    #             end = time.time()
+    #         elif msg['request'] == 'play':
+    #             self.move(conn, msg)
+    #             end = time.time()
+    #     if end is not None: print("Time of execution:", end-start)
 
     def pong(self, conn):
         player_response(conn, {'response': 'pong'})
@@ -89,11 +137,13 @@ if __name__ == "__main__":
     player1 = Player(("127.0.0.1", 3000), ("127.0.0.1", 8080), "TheBest", ["20269", "20269"])
 
     player1.sub()
-    player1.thread()
+    t = threading.Thread(target = player1.run)
+    t.start()
+    atexit.register(player1.terminate, )
 
-    time.sleep(2)
-
-    player2 = Player(("127.0.0.1", 3000), ("127.0.0.1", 5000), "TheBetter", ["15354", "18335"])
+    player2 = Player(("127.0.0.1", 3000), ("127.0.0.1", 5000), "TheBetter", ["15254"])
 
     player2.sub()
-    player2.thread()
+    t = threading.Thread(target = player2.run)
+    t.start()
+    atexit.register(player2.terminate, )
