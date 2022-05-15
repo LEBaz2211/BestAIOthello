@@ -1,5 +1,7 @@
+from time import time
 import numpy as np
-from easyAI import TwoPlayerGame, AI_Player, Negamax
+from easyAI import TranspositionTable, TwoPlayerGame, AI_Player, Negamax, Human_Player
+import pickle
 
 to_string = lambda a: "ABCDEFGH"[a[0]] + str(a[1] + 1)
 to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
@@ -18,7 +20,6 @@ class OthelloAI(TwoPlayerGame):
 
     def state_to_board(self):
         """Updates the state of the board"""
-        
         board = np.zeros((8, 8), dtype=int)
         for case in self.state["board"][0]:
             board[case//8][(case%8)] = 1
@@ -60,6 +61,27 @@ class OthelloAI(TwoPlayerGame):
             npieces_opponent = np.sum(self.board == self.opponent_index)
             return npieces_player - npieces_opponent
 
+    def ttentry(self):
+        return "".join([".0X"[i] for i in self.board.flatten()])
+
+    def show(self):
+        """ Prints the board in a fancy (?) way """
+        print (
+            "\n"
+            + "\n".join(
+                ["  1 2 3 4 5 6 7 8"]
+                + [
+                    "ABCDEFGH"[k]
+                    + " "
+                    + " ".join(
+                        [[".", "1", "2", "X"][self.board[k][i]] for i in range(8)]
+                    )
+                    for k in range(8)
+                ]
+                + [""]
+            )
+        )
+    
 
 # This board is used by the AI to give more importance to the border
 BOARD_SCORE = np.array(
@@ -71,7 +93,7 @@ BOARD_SCORE = np.array(
         [3, 1, 1, 1, 1, 1, 1, 3],
         [3, 1, 1, 1, 1, 1, 1, 3],
         [3, 1, 1, 1, 1, 1, 1, 3],
-        [9, 3, 3, 3, 3, 3, 3, 9],
+        [9, 3, 3, 3, 3, 3, 3, 9]
     ]
 )
 
@@ -98,20 +120,49 @@ def pieces_flipped(board, pos, current_player):
 
     return flipped
 
-def move_extractor(state) :
+
+
+
+def move_extractor(state0, state1) :
     """It is defined to more efficiently run the game and give the necessary argguments to the algorithm"""
     rec = 4
-    ai = Negamax(rec)
-    the_game = OthelloAI([AI_Player(ai), AI_Player(ai)], state)
+    table = TranspositionTable().from_file('saved_tt.data')
+
+    ai = Negamax(rec, tt=table)
+    before = []
+    after = []
+    if state0 is not None and state1 is not None:
+        for case in state0["board"][1]:
+            before.append(to_string(np.array[case//8, (case%8)]))
+        for case in state1["board"][1]:
+            after.append(to_string(np.array[case//8, (case%8)]))
+    oppmove = after not in before
+    print(oppmove)
+    the_game = OthelloAI([AI_Player(ai), Human_Player(move = oppmove)], state1)
     try :
-        the_move = the_game.get_move()
+        the_move = the_game.play()
         [i, j] = to_array(the_move)
         real_move = int((i)*8 + j)
+        # table.to_file('saved_tt.data')
         return real_move
     except :
         print("No possible moves left")
 
 
+
 if __name__ == "__main__":
-    to_string = lambda a: "ABCDEFGH"[a[0]] + str(a[1] + 1)
-    to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
+    start = time()
+    rec = 3
+    state = {'players': ['TheBest', 'TheBetter'], 'current': 0, 'board': [[28, 35], [27, 36]]}
+    table = TranspositionTable().from_file('saved_tt.data')
+
+    ai = Negamax(rec, tt=table)
+
+    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(3, tt=table))], state)
+    i = 0
+        
+    print(the_game.play())
+    i +=1
+
+    print(time() - start)
+    table.to_file('saved_tt.data')

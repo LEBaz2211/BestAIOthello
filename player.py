@@ -3,7 +3,7 @@ import json
 import threading
 import time
 from the_ai import move_extractor
-from socket_handling import server_response, begin_server, player_response
+from socket_handling import server_response, player_response
 import time
 import atexit
 import time
@@ -28,7 +28,6 @@ class Player:
         data = {"request": "subscribe", "port": self.game_address[1],"name": self.name, "matricules": self.matricules}
         print("INFO:inscription:sent player creds: ")
         print(data)
-        port = self.sub_address[1]
         with socket.socket() as sub_sock: #open subscription socket and closes when exits
             try:
                 sub_sock.connect(self.sub_address)
@@ -43,7 +42,11 @@ class Player:
     def run(self):
         with socket.socket() as player_sock:
             player_sock.bind(self.game_address)
+            state0 = None
+            state1 = None
             while True:
+                if state1 is not None:
+                    state0 = state1
             # Set timeout period
                 player_sock.settimeout(5) 
                 while self._running:
@@ -59,7 +62,10 @@ class Player:
                         if msg['request'] == 'ping':
                             self.pong(conn)
                         elif msg['request'] == 'play':
-                            self.move(conn, msg)
+                            state1 = msg['state']
+                            if state0 is not None:
+                                self.move(conn, msg, state0)
+                            else: self.move(conn, msg)
                             print("EX_TIME: {}".format(time.time() - start))
                         break
                         
@@ -86,10 +92,10 @@ class Player:
         player_response(conn, {'response': 'pong'})
         print("INFO:player and server are playing at ping pong")
 
-    def move(self, conn, msg):
+    def move(self, conn, msg, state0=None):
         print("\n","_"*20)
         print("\n{} player's game:\nLIVES left: {} \nERRORS: {}".format(str(msg['state']['players'][msg['state']['current']]), str(msg['lives']), str(msg['errors'])))
-        the_move_played = move_extractor(msg['state'])
+        the_move_played = move_extractor(state0, msg['state'])
         player_response(conn, {"response": "move","move": the_move_played, "message": "L'important c'est de participer ;p"})
     
     def thread(self):
