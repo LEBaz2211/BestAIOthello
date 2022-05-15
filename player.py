@@ -60,15 +60,7 @@ class Player:
                         if msg['request'] == 'ping':
                             self.pong(conn)
                         elif msg['request'] == 'play':
-<<<<<<< HEAD
-                            state1 = msg['state']
-                            if state0 is not None:
-                                self.move(conn, msg, state0)
-                            else: self.move(conn, msg)
-                            print("EX_TIME: {}".format(time.time() - start))
-=======
                             self.move(conn, msg)
->>>>>>> parent of b134876 (modified prints appeal)
                         break
                     except socket.timeout and json.decoder.JSONDecodeError:
                         continue
@@ -114,16 +106,9 @@ class Player:
         player_response(conn, {'response': 'pong'})
         print("INFO:player and server are playing at ping pong")
 
-<<<<<<< HEAD
-    def move(self, conn, msg, state0=None):
-        print("\n","_"*20)
-        print("\n{} player's game:\nLIVES left: {} \nERRORS: {}".format(str(msg['state']['players'][msg['state']['current']]), str(msg['lives']), str(msg['errors'])))
-        the_move_played = move_extractor(state0, msg['state'])
-=======
     def move(self, conn, msg):
         print("GAME:\nLives left: " + str(msg['lives']) + "\nErrors: " + str(msg['errors']) + "\nGame state: " + str(msg['state']))
         the_move_played = move_extractor(msg['state'])
->>>>>>> parent of b134876 (modified prints appeal)
         player_response(conn, {"response": "move","move": the_move_played, "message": "L'important c'est de participer ;p"})
 
     # def comm(self):

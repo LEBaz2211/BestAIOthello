@@ -20,11 +20,7 @@ class OthelloAI(TwoPlayerGame):
 
 
     def state_to_board(self):
-<<<<<<< HEAD
-        """Updates the state of the board"""
-=======
         """Updates the dtate of the board"""
->>>>>>> parent of b134876 (modified prints appeal)
         board = np.zeros((8, 8), dtype=int)
         for case in self.state["board"][0]:
             board[case//8][(case%8)] = 1
@@ -149,34 +145,6 @@ def move_extractor(state0, state1) :
     print(oppmove)
     the_game = OthelloAI([AI_Player(ai), Human_Player(move = oppmove)], state1)
     try :
-<<<<<<< HEAD
-        the_move = the_game.play()
-        [i, j] = to_array(the_move)
-        real_move = int((i)*8 + j)
-        # table.to_file('saved_tt.data')
-        return real_move
-    except :
-        print("No possible moves left")
-
-
-
-if __name__ == "__main__":
-    start = time()
-    rec = 3
-    state = {'players': ['TheBest', 'TheBetter'], 'current': 0, 'board': [[28, 35], [27, 36]]}
-    table = TranspositionTable().from_file('saved_tt.data')
-
-    ai = Negamax(rec, tt=table)
-
-    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(3, tt=table))], state)
-    i = 0
-        
-    print(the_game.play())
-    i +=1
-
-    print(time() - start)
-    table.to_file('saved_tt.data')
-=======
         the_move = the_game.get_move()
         print(the_move)
         list1 = ("A,B,C,D,E,F,G,H").split(",")
@@ -189,4 +157,3 @@ if __name__ == "__main__":
         return (real_move)
     except :
         print("No possible moves left")
->>>>>>> parent of b134876 (modified prints appeal)
