@@ -42,11 +42,7 @@ class Player:
     def run(self):
         with socket.socket() as player_sock:
             player_sock.bind(self.game_address)
-            state0 = None
-            state1 = None
             while True:
-                if state1 is not None:
-                    state0 = state1
             # Set timeout period
                 player_sock.settimeout(5) 
                 while self._running:
@@ -63,9 +59,7 @@ class Player:
                             self.pong(conn)
                         elif msg['request'] == 'play':
                             state1 = msg['state']
-                            if state0 is not None:
-                                self.move(conn, msg, state0)
-                            else: self.move(conn, msg)
+                            self.move(conn, msg)
                             print("EX_TIME: {}".format(time.time() - start))
                         break
                         
@@ -92,10 +86,10 @@ class Player:
         player_response(conn, {'response': 'pong'})
         print("INFO:player and server are playing at ping pong")
 
-    def move(self, conn, msg, state0=None):
+    def move(self, conn, msg):
         print("\n","_"*20)
         print("\n{} player's game:\nLIVES left: {} \nERRORS: {}".format(str(msg['state']['players'][msg['state']['current']]), str(msg['lives']), str(msg['errors'])))
-        the_move_played = move_extractor(state0, msg['state'])
+        the_move_played = move_extractor(msg['state'])
         player_response(conn, {"response": "move","move": the_move_played, "message": "L'important c'est de participer ;p"})
     
     def thread(self):

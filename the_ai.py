@@ -61,9 +61,6 @@ class OthelloAI(TwoPlayerGame):
             npieces_opponent = np.sum(self.board == self.opponent_index)
             return npieces_player - npieces_opponent
 
-    def ttentry(self):
-        return "".join([".0X"[i] for i in self.board.flatten()])
-
     def show(self):
         """ Prints the board in a fancy (?) way """
         print (
@@ -123,27 +120,17 @@ def pieces_flipped(board, pos, current_player):
 
 
 
-def move_extractor(state0, state1) :
+def move_extractor(state) :
     """It is defined to more efficiently run the game and give the necessary argguments to the algorithm"""
     rec = 4
-    table = TranspositionTable().from_file('saved_tt.data')
 
-    ai = Negamax(rec, tt=table)
-    before = []
-    after = []
-    if state0 is not None and state1 is not None:
-        for case in state0["board"][1]:
-            before.append(to_string(np.array[case//8, (case%8)]))
-        for case in state1["board"][1]:
-            after.append(to_string(np.array[case//8, (case%8)]))
-    oppmove = after not in before
-    print(oppmove)
-    the_game = OthelloAI([AI_Player(ai), Human_Player(move = oppmove)], state1)
+    ai = Negamax(rec)
+
+    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(2))], state)
     try :
-        the_move = the_game.play()
+        the_move = the_game.get_move()
         [i, j] = to_array(the_move)
         real_move = int((i)*8 + j)
-        # table.to_file('saved_tt.data')
         return real_move
     except :
         print("No possible moves left")
@@ -154,15 +141,9 @@ if __name__ == "__main__":
     start = time()
     rec = 3
     state = {'players': ['TheBest', 'TheBetter'], 'current': 0, 'board': [[28, 35], [27, 36]]}
-    table = TranspositionTable().from_file('saved_tt.data')
 
-    ai = Negamax(rec, tt=table)
+    ai = Negamax(rec)
 
-    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(3, tt=table))], state)
-    i = 0
-        
-    print(the_game.play())
-    i +=1
+    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(3))], state)
 
     print(time() - start)
-    table.to_file('saved_tt.data')
