@@ -7,11 +7,14 @@ to_string = lambda a: "ABCDEFGH"[a[0]] + str(a[1] + 1)
 to_array = lambda s: np.array(["ABCDEFGH".index(s[0]), int(s[1]) - 1])
 
 class OthelloAI(TwoPlayerGame):
-    """The OthelloAI class is used to define and implement the algorithm"""
+    """
+    The OthelloAI class is used to define and implement the algorithm
+    """
 
     def __init__(self, players, state, board=None):
-        """Initialisation of the game"""
-
+        """
+        Initialisation of the game
+        """
         self.players = players
         self.state = state
         self.board = self.state_to_board()
@@ -19,7 +22,9 @@ class OthelloAI(TwoPlayerGame):
 
 
     def state_to_board(self):
-        """Updates the state of the board"""
+        """
+        Updates the state of the board
+        """
         board = np.zeros((8, 8), dtype=int)
         for case in self.state["board"][0]:
             board[case//8][(case%8)] = 1
@@ -28,7 +33,9 @@ class OthelloAI(TwoPlayerGame):
         return(board)
 
     def possible_moves(self):
-        """This function returns all the possible moves that AI can play"""
+        """
+        This function returns all the possible moves that AI can play
+        """
         poss_moves = [
             to_string((i, j))
             for i in range(8)
@@ -39,43 +46,38 @@ class OthelloAI(TwoPlayerGame):
         return poss_moves
 
     def make_move(self, pos):
-        """Transforms the game according to the moves"""
+        """
+        Transforms the game according to the moves
+        """
         pos = to_array(pos)
         flipped = pieces_flipped(self.board, pos, self.current_player)
         for i, j in flipped:
             self.board[i, j] = self.current_player
-        self.board[pos[0], pos[1]] = self.current_player      
+        self.board[pos[0], pos[1]] = self.current_player    
 
     def is_over(self):
-        """Checks if the game has ended"""
+        """
+        Checks if the game has ended
+        """
         return self.possible_moves() == []
 
     def scoring(self):
-        """Gives a score to the current game (for the AI), to aim for the higher score we give higher values to more strategic positions"""
-        if np.sum(self.board == 0) > 52:  # less than half the board is full
+        """
+        Gives a score to the current game (for the AI), to aim for the higher score we give higher values to more strategic positions
+        """
+        if np.sum(self.board == 0) > 52: #Less than 1/4 of the board is full
             player = (self.board == self.current_player).astype(int)
             opponent = (self.board == self.opponent_index).astype(int)
-            return ((player - opponent) * sweat_16).sum()
-        
-        # elif np.sum(self.board == 0) > 35 and np.sum(self.board == 0) < 52:  # less than half the board is full
-        #     npieces_player = np.sum(self.board == self.current_player)
-        #     npieces_opponent = np.sum(self.board == self.opponent_index)
-        #     return -(npieces_player - npieces_opponent)/2
+            return ((player - opponent) * sweat_16).sum() #Rewarded if takes 
 
-        else:# np.sum(self.board == 0) > 20 and np.sum(self.board == 0) < 35:  # less than half the board is full
+        else:
             player = (self.board == self.current_player).astype(int)
             opponent = (self.board == self.opponent_index).astype(int)
             npieces_player = np.sum(self.board == self.current_player)
             npieces_opponent = np.sum(self.board == self.opponent_index)
             return ((player - opponent) * late_game).sum() + (npieces_player - npieces_opponent)
-        
-        # else:
-        #     npieces_player = np.sum(self.board == self.current_player)
-        #     npieces_opponent = np.sum(self.board == self.opponent_index)
-        #     return (npieces_player - npieces_opponent)*3
     
 
-# This board is used by the AI to give more importance to the border
 
 sweat_16 = np.array(
     [
@@ -111,20 +113,18 @@ def pieces_flipped(board, pos, current_player):
     Dertermines which pawns have been taken and need to be flipped (to change color)
     """
     flipped = []
-
     for d in dirs:
         ppos = pos + d
         streak = []
         while (0 <= ppos[0] <= 7) and (0 <= ppos[1] <= 7):
-            if board[ppos[0], ppos[1]] == 3 - current_player:
+            if board[ppos[0]][ppos[1]] == 3 - current_player:
                 streak.append(+ppos)
-            elif board[ppos[0], ppos[1]] == current_player:
+            elif board[ppos[0]][ppos[1]] == current_player:
                 flipped += streak
                 break
             else:
                 break
             ppos += d
-
     return flipped
 
 
@@ -150,12 +150,13 @@ def move_extractor(state) :
 
 
 if __name__ == "__main__":
-    start = time()
-    rec = 3
-    state = {'players': ['TheBest', 'TheBetter'], 'current': 0, 'board': [[28, 35], [27, 36]]}
 
-    ai = Negamax(rec)
+    state = {'players': ['OmegaZero', 'OmegaZero1'], 'current': 0, 'board': [[28, 35], [27, 36]]}
 
-    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(3))], state)
+    ai = Negamax(1)
 
-    print(time() - start)
+    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(1))], state)
+
+    print(the_game.get_move())
+
+    the_game.make_move('C4')
