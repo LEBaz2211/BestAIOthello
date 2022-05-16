@@ -23,6 +23,8 @@ Libraries used : easyAI, numpy
     we would easely have access to the different positions on the board and we could easely go through it 
     to collect information for the AI.
 
+
+
 B. Player file
 
 Libraries used : socket, json, threading, time
@@ -42,3 +44,6 @@ D. To run the code :
 
     2. Run file game_runner.py
 
+E. Strategy:
+
+    The main strat of the AI is implemented in the scoring function of the class OthelloAI. The objective is to get the corners in the early game.

@@ -66,19 +66,18 @@ class Player:
                         if msg['request'] == 'ping':
                             self.pong(conn)
                         elif msg['request'] == 'play':
-                            state1 = msg['state']
                             self.move(conn, msg)
                             print("EX_TIME: {}".format(time.time() - start))
                         break
                         
                     except socket.timeout and json.decoder.JSONDecodeError:
                         continue
-        return
     
     def wait_for_ping(self, player_sock):
         """
         When not hearing from the server, waits for a ping from the game server
         """
+        
         while True:
             player_sock.settimeout(5)
             while self._running:

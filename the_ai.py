@@ -108,11 +108,11 @@ def move_extractor(state) :
     """
     Takes the necessary argguments to the algorithm and returns the move
     """
-    rec = 4
+    rec = 6
 
     ai = Negamax(rec)
 
-    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(4))], state)
+    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(3))], state)
     try :
         the_move = the_game.get_move()
         [i, j] = to_array(the_move)
