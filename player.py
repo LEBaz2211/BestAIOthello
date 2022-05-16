@@ -7,6 +7,8 @@ from socket_handling import server_response, player_response
 import time
 import atexit
 import time
+import numpy as np
+
 
 class Player:
     """
@@ -37,9 +39,15 @@ class Player:
                 print("The game server isn't open yet")
     
     def terminate(self):
+        """
+        If you want to terminate all sockets
+        """
         self._running = False
 
     def run(self):
+        """
+        Run's the connection to server and the requests
+        """
         with socket.socket() as player_sock:
             player_sock.bind(self.game_address)
             while True:
@@ -68,6 +76,9 @@ class Player:
         return
     
     def wait_for_ping(self, player_sock):
+        """
+        When not hearing from the server, waits for a ping from the game server
+        """
         while True:
             player_sock.settimeout(5)
             while self._running:
@@ -83,20 +94,21 @@ class Player:
                     continue
 
     def pong(self, conn):
+        """
+        returns pong to a ping
+        """
         player_response(conn, {'response': 'pong'})
         print("INFO:player and server are playing at ping pong")
 
     def move(self, conn, msg):
+        """
+        This function extracts the move of the AI and sends it to the game server
+        """
         print("\n","_"*20)
         print("\n{} player's game:\nLIVES left: {} \nERRORS: {}".format(str(msg['state']['players'][msg['state']['current']]), str(msg['lives']), str(msg['errors'])))
         the_move_played = move_extractor(msg['state'])
         player_response(conn, {"response": "move","move": the_move_played, "message": "L'important c'est de participer ;p"})
-    
-    def thread(self):
-        """
-        This function creates a thread using the comm() fuction.
-        """
-        threading.Thread(target = self.comm).start()
+        return msg['state']['board']
 
 
 

@@ -7,6 +7,10 @@ IT project June 2022
 Basil Mannaerts (20269)
 Yllke Prebreza (18402)
 
+QUICK LAUNCH:
+
+    Go to the "game_runner.py" file, change the server addresses in player1 object creation, then run the file.
+
 A. The AI implementation
 
 Libraries used : easyAI, numpy, othello_game, game_support

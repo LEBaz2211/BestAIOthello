@@ -1,7 +1,12 @@
 from player import Player
+import threading
+import atexit
+#              subscription address      game address
+#                       |                     |
+#                       v                     v
+player1 = Player(("127.0.0.1", 3000), ("127.0.0.1", 8080), "TheBest, maybe?", ["20269", "18402"])
 
-ready_player_one = Player(("172.17.10.40", 3000), ("172.17.10.40", 8001), "The Best, maybe?", ["20269", "18402"])
-
-ready_player_one.sub()
-ready_player_one.begin()
-ready_player_one.thread()
+player1.sub()
+t = threading.Thread(target = player1.run)
+t.start()
+atexit.register(player1.terminate, )

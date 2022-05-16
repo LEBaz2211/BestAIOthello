@@ -55,33 +55,15 @@ class OthelloAI(TwoPlayerGame):
         if np.sum(self.board == 0) > 32:  # less than half the board is full
             player = (self.board == self.current_player).astype(int)
             opponent = (self.board == self.opponent_index).astype(int)
-            return ((player - opponent) * BOARD_SCORE).sum()
+            return ((player - opponent) * scores).sum()
         else:
             npieces_player = np.sum(self.board == self.current_player)
             npieces_opponent = np.sum(self.board == self.opponent_index)
             return npieces_player - npieces_opponent
-
-    def show(self):
-        """ Prints the board in a fancy (?) way """
-        print (
-            "\n"
-            + "\n".join(
-                ["  1 2 3 4 5 6 7 8"]
-                + [
-                    "ABCDEFGH"[k]
-                    + " "
-                    + " ".join(
-                        [[".", "1", "2", "X"][self.board[k][i]] for i in range(8)]
-                    )
-                    for k in range(8)
-                ]
-                + [""]
-            )
-        )
     
 
 # This board is used by the AI to give more importance to the border
-BOARD_SCORE = np.array(
+scores = np.array(
     [
         [9, 3, 3, 3, 3, 3, 3, 9],
         [3, 1, 1, 1, 1, 1, 1, 3],
@@ -94,15 +76,17 @@ BOARD_SCORE = np.array(
     ]
 )
 
-DIRECTIONS = [
+dirs = [
     np.array([i, j]) for i in [-1, 0, 1] for j in [-1, 0, 1] if (i != 0 or j != 0)
 ]
 
 def pieces_flipped(board, pos, current_player):
-    """It dertermines which pawns have been taken and need to be flipped (to change color)"""
+    """
+    Dertermines which pawns have been taken and need to be flipped (to change color)
+    """
     flipped = []
 
-    for d in DIRECTIONS:
+    for d in dirs:
         ppos = pos + d
         streak = []
         while (0 <= ppos[0] <= 7) and (0 <= ppos[1] <= 7):
@@ -121,12 +105,14 @@ def pieces_flipped(board, pos, current_player):
 
 
 def move_extractor(state) :
-    """It is defined to more efficiently run the game and give the necessary argguments to the algorithm"""
+    """
+    Takes the necessary argguments to the algorithm and returns the move
+    """
     rec = 4
 
     ai = Negamax(rec)
 
-    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(2))], state)
+    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(4))], state)
     try :
         the_move = the_game.get_move()
         [i, j] = to_array(the_move)
