@@ -13,7 +13,7 @@ QUICK LAUNCH:
 
 A. The AI implementation
 
-Libraries used : easyAI, numpy, othello_game, game_support
+Libraries used : easyAI, numpy
 
     - EsayAI is a pure-Python artificial intelligence framework for two players games. This 
     library makes it easy to define the mechanism of a game and, in our case, play it against 
