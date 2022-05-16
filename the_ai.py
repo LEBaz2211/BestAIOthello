@@ -52,27 +52,53 @@ class OthelloAI(TwoPlayerGame):
 
     def scoring(self):
         """Gives a score to the current game (for the AI), to aim for the higher score we give higher values to more strategic positions"""
-        if np.sum(self.board == 0) > 32:  # less than half the board is full
+        if np.sum(self.board == 0) > 52:  # less than half the board is full
             player = (self.board == self.current_player).astype(int)
             opponent = (self.board == self.opponent_index).astype(int)
-            return ((player - opponent) * scores).sum()
-        else:
+            return ((player - opponent) * sweat_16).sum()
+        
+        # elif np.sum(self.board == 0) > 35 and np.sum(self.board == 0) < 52:  # less than half the board is full
+        #     npieces_player = np.sum(self.board == self.current_player)
+        #     npieces_opponent = np.sum(self.board == self.opponent_index)
+        #     return -(npieces_player - npieces_opponent)/2
+
+        else:# np.sum(self.board == 0) > 20 and np.sum(self.board == 0) < 35:  # less than half the board is full
+            player = (self.board == self.current_player).astype(int)
+            opponent = (self.board == self.opponent_index).astype(int)
             npieces_player = np.sum(self.board == self.current_player)
             npieces_opponent = np.sum(self.board == self.opponent_index)
-            return npieces_player - npieces_opponent
+            return ((player - opponent) * late_game).sum() + (npieces_player - npieces_opponent)
+        
+        # else:
+        #     npieces_player = np.sum(self.board == self.current_player)
+        #     npieces_opponent = np.sum(self.board == self.opponent_index)
+        #     return (npieces_player - npieces_opponent)*3
     
 
 # This board is used by the AI to give more importance to the border
-scores = np.array(
+
+sweat_16 = np.array(
     [
-        [9, 3, 3, 3, 3, 3, 3, 9],
+        [10, 3, 3, 3, 3, 3, 3, 10],
+        [3, 1, 1, 1, 1, 1, 1, 3],
+        [3, 1, 2, 2, 2, 2, 1, 3],
+        [3, 1, 2, 3, 3, 2, 1, 3],
+        [3, 1, 2, 3, 3, 2, 1, 3],
+        [3, 1, 2, 2, 2, 2, 1, 3],
+        [3, 1, 1, 1, 1, 1, 1, 3],
+        [10, 3, 3, 3, 3, 3, 3, 10]
+    ]
+)
+late_game = np.array(
+    [
+        [20, 3, 3, 3, 3, 3, 1, 20],
+        [1, -1, 1, 1, 1, 1, -1, 1],
         [3, 1, 1, 1, 1, 1, 1, 3],
         [3, 1, 1, 1, 1, 1, 1, 3],
         [3, 1, 1, 1, 1, 1, 1, 3],
         [3, 1, 1, 1, 1, 1, 1, 3],
-        [3, 1, 1, 1, 1, 1, 1, 3],
-        [3, 1, 1, 1, 1, 1, 1, 3],
-        [9, 3, 3, 3, 3, 3, 3, 9]
+        [1, -1, 1, 1, 1, 1, -1, 1],
+        [20, 1, 3, 3, 3, 3, 1, 20]
     ]
 )
 
@@ -108,11 +134,11 @@ def move_extractor(state) :
     """
     Takes the necessary argguments to the algorithm and returns the move
     """
-    rec = 6
+    rec = 5
 
     ai = Negamax(rec)
 
-    the_game = OthelloAI([AI_Player(ai), AI_Player(Negamax(3))], state)
+    the_game = OthelloAI([AI_Player(ai), AI_Player(ai)], state)
     try :
         the_move = the_game.get_move()
         [i, j] = to_array(the_move)

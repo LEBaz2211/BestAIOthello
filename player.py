@@ -52,7 +52,7 @@ class Player:
             player_sock.bind(self.game_address)
             while True:
             # Set timeout period
-                player_sock.settimeout(5) 
+                player_sock.settimeout(10) 
                 while self._running:
                     player_sock.listen()
                     try:
@@ -79,7 +79,7 @@ class Player:
         """
         
         while True:
-            player_sock.settimeout(5)
+            player_sock.settimeout(1)
             while self._running:
                 player_sock.listen()
                 try:
