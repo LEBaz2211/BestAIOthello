@@ -134,7 +134,7 @@ def move_extractor(state) :
     """
     Takes the necessary argguments to the algorithm and returns the move
     """
-    rec = 5
+    rec = 4
 
     ai = Negamax(rec)
 
